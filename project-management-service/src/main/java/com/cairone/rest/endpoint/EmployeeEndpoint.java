@@ -1,7 +1,7 @@
 package com.cairone.rest.endpoint;
 
 import com.cairone.core.resource.EmployeeResource;
-import com.cairone.data.domain.EmployeeEntity;
+import com.cairone.data.db.domain.EmployeeEntity;
 import com.cairone.rest.ctrl.constraint.PageConstraint;
 import com.cairone.rest.request.EmployeeRequest;
 import com.cairone.rest.resource.ErrorResource;

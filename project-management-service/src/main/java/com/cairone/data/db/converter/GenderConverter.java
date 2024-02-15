@@ -1,4 +1,4 @@
-package com.cairone.data.converter;
+package com.cairone.data.db.converter;
 
 import com.cairone.vo.enums.GenderEnum;
 import jakarta.persistence.AttributeConverter;

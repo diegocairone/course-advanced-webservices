@@ -1,4 +1,4 @@
-package com.cairone.data.repository;
+package com.cairone.data.db.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;

@@ -1,7 +1,7 @@
 package com.cairone.core.converter;
 
 import com.cairone.core.resource.EmployeeResource;
-import com.cairone.data.domain.EmployeeEntity;
+import com.cairone.data.db.domain.EmployeeEntity;
 import com.cairone.data.storage.ContentStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
