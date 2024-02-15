@@ -1,4 +1,4 @@
-package com.cairone.data.domain;
+package com.cairone.data.db.domain;
 
 import com.cairone.vo.enums.GenderEnum;
 import jakarta.persistence.*;
