@@ -1,2 +1,19 @@
-## example
-
+{
+    "complete-name": "Homero Simpson",
+    "position": "Senior Java Developer",
+    "email": "homero.simpson@gmail.com",
+    "phone": "1234567890",
+    "linked-profile-url": "https://linkedin.com/in/homero-simpson-cv",
+    "summary": "I am a senior software developer specialized in backend or server-side technologies with more than 15 years of experience. Proven ability to design, develop, and deploy scalable and secure server-side applications. Expertise in Java, Spring Framework and Spring Boot, JPA and Hibernate, relational databases, and cloud (like AWS and GCP). Strong problem-solving and analytical skills.",
+    "areas-of-expertise": [
+        "OOP and Java programming language",
+        "Design patterns",
+        "Testing",
+        "Version control",
+        "Web development (server side)",
+        "Web development (server side)"
+    ],
+    "industries": [
+        "retail", "health", "bank and finance"
+    ]
+}
