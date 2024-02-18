@@ -1,11 +1,11 @@
 package com.cairone.error;
 
-public class AppServerException extends AppBaseException {
+public class AppServerException extends RuntimeException {
 
     private final String technicalMessage;
 
-    private AppServerException(Throwable cause, String message, String technicalMessage) {
-        super(cause, message);
+    private AppServerException(String clientMessage, String technicalMessage, Throwable cause) {
+        super(clientMessage, cause);
         this.technicalMessage = technicalMessage;
     }
 
@@ -15,12 +15,12 @@ public class AppServerException extends AppBaseException {
 
     public static class Builder {
 
-        private String message;
+        private String clientMessage;
         private String technicalMessage;
         private Throwable cause;
 
-        public Builder withMessage(String message) {
-            this.message = message;
+        public Builder withMessage(String clientMessage) {
+            this.clientMessage = clientMessage;
             return this;
         }
 
@@ -35,7 +35,7 @@ public class AppServerException extends AppBaseException {
         }
 
         public AppServerException build() {
-            return new AppServerException(cause, message, technicalMessage);
+            return new AppServerException(clientMessage, technicalMessage, cause);
         }
     }
 }

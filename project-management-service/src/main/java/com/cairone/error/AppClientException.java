@@ -1,20 +1,12 @@
 package com.cairone.error;
 
-public class AppClientException extends AppBaseException {
+public class AppClientException extends RuntimeException {
 
     public AppClientException(String message) {
         super(message);
     }
 
     public AppClientException(String message, Object... args) {
-        super(message, args);
-    }
-
-    public AppClientException(Throwable cause, String message) {
-        super(cause, message);
-    }
-
-    public AppClientException(Throwable cause, String message, Object... args) {
-        super(cause, message, args);
+        super(String.format(message, args));
     }
 }

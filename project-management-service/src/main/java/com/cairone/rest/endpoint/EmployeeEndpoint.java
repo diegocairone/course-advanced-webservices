@@ -3,7 +3,7 @@ package com.cairone.rest.endpoint;
 import com.cairone.core.resource.EmployeeResource;
 import com.cairone.rest.ctrl.constraint.PageConstraint;
 import com.cairone.rest.request.EmployeeRequest;
-import com.cairone.rest.resource.ErrorResource;
+import com.cairone.rest.resource.MultiErrorResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -36,7 +36,7 @@ public interface EmployeeEndpoint {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved employees",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Page.class)))),
             @ApiResponse(responseCode = "400", description = "Bad parameter value for sorting",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorResource.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = MultiErrorResource.class)))),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             )
@@ -57,7 +57,7 @@ public interface EmployeeEndpoint {
                     }
             ),
             @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))
             ),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
@@ -71,7 +71,7 @@ public interface EmployeeEndpoint {
             @ApiResponse(responseCode = "200", description = "Employee updated",
                     content = @Content(schema = @Schema(implementation = EmployeeResource.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))
             ),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
@@ -84,7 +84,7 @@ public interface EmployeeEndpoint {
             @ApiResponse(responseCode = "200", description = "Employee fields updated",
                     content = @Content(schema = @Schema(implementation = EmployeeResource.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))
             ),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
@@ -97,7 +97,7 @@ public interface EmployeeEndpoint {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Employee deleted"),
             @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))
             ),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
@@ -111,9 +111,9 @@ public interface EmployeeEndpoint {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved employee",
                     content = @Content(schema = @Schema(implementation = EmployeeResource.class))),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))),
             @ApiResponse(responseCode = "404", description = "Employee not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             )
@@ -131,7 +131,7 @@ public interface EmployeeEndpoint {
                             description = "The URL to get avatar image from content storage")
                     }),
             @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))
             ),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
@@ -148,7 +148,7 @@ public interface EmployeeEndpoint {
                             description = "The URL to get avatar image from content storage")
                     }),
             @ApiResponse(responseCode = "400", description = "Invalid input",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))
             ),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
@@ -162,7 +162,7 @@ public interface EmployeeEndpoint {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved employee avatar",
                     content = @Content(schema = @Schema(implementation = Resource.class))),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             ),
@@ -170,7 +170,7 @@ public interface EmployeeEndpoint {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             ),
             @ApiResponse(responseCode = "404", description = "Employee avatar not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class)))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class)))
     })
     @PreAuthorize("hasRole('CONTENT_ADMIN')")
     ResponseEntity<Resource> downloadAvatar(UUID id);
@@ -180,12 +180,12 @@ public interface EmployeeEndpoint {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Employee avatar removed"),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             ),
             @ApiResponse(responseCode = "404", description = "Employee avatar not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class)))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class)))
     })
     ResponseEntity<Void> removeAvatar(UUID id);
 }
