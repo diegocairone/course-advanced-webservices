@@ -5,11 +5,14 @@ import com.cairone.core.form.EmployeeForm;
 import com.cairone.core.resource.EmployeeResource;
 import com.cairone.data.db.domain.EmployeeEntity;
 import com.cairone.data.db.repository.EmployeeRepository;
+import com.cairone.data.docs.domain.EmployeeCvDoc;
+import com.cairone.data.docs.repository.EmployeeCvRepository;
 import com.cairone.data.storage.ContentStorage;
 import com.cairone.error.AppClientException;
 import com.cairone.core.exception.ResourceNotFoundException;
 import com.cairone.utils.CurpUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,12 +24,14 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
 
     private static final String RESOURCE_NAME = "Employee";
 
+    private final EmployeeCvRepository employeeCvRepository;
     private final EmployeeRepository employeeRepository;
     private final EmployeeConverter employeeConverter;
     private final ContentStorage contentStorage;
@@ -173,4 +178,76 @@ public class EmployeeService {
                         .build());
     }
 
+    public Optional<EmployeeCvDoc> findCvById(UUID id) {
+        return employeeRepository.findById(id)
+                .map(employeeEntity -> employeeCvRepository.findById(employeeEntity.getId())
+                        .orElseThrow(() -> ResourceNotFoundException.builder()
+                                .withResourceName("Employee CV")
+                                .withResourceId(id.toString())
+                                .build()));
+    }
+
+    public EmployeeCvDoc uploadNewCv(UUID id, Map<String, Object> employeeData) {
+        return handleCv(id, employeeData, employeeEntity -> {
+            if (employeeCvRepository.existsById(employeeEntity.getId())) {
+                throw new AppClientException("Employee CV already exists for employee with ID %s", id);
+            }
+        });
+    }
+
+    public EmployeeCvDoc replaceExistingCv(UUID id, Map<String, Object> employeeData) {
+        return handleCv(id, employeeData, employeeEntity -> {
+            if (!employeeCvRepository.existsById(employeeEntity.getId())) {
+                throw new AppClientException("Employee CV does not exist for employee with ID %s", id);
+            }
+        });
+    }
+
+    public void deleteCv(UUID id) {
+        employeeRepository.findById(id).ifPresentOrElse(
+                employeeEntity ->
+                    employeeCvRepository.findById(employeeEntity.getId())
+                            .ifPresentOrElse(
+                                    employeeCvRepository::delete,
+                                    () -> {
+                                        throw ResourceNotFoundException.builder()
+                                                .withResourceName("Employee CV")
+                                                .withResourceId(id.toString())
+                                                .build();
+                                    }),
+                () -> {
+                    throw ResourceNotFoundException.builder()
+                            .withResourceName(RESOURCE_NAME)
+                            .withResourceId(id.toString())
+                            .build();
+                });
+    }
+
+    private EmployeeCvDoc handleCv(UUID id, Map<String, Object> employeeData, Consumer<EmployeeEntity> consumer) {
+
+        if (Objects.isNull(employeeData) || employeeData.isEmpty()) {
+            throw new AppClientException("Employee data is empty!");
+        }
+
+        EmployeeEntity employeeEntity = employeeRepository.findById(id)
+                .orElseThrow(() -> ResourceNotFoundException.builder()
+                        .withResourceName(RESOURCE_NAME)
+                        .withResourceId(id.toString())
+                        .build());
+
+        // run logic to check if employee CV exists or not
+        // when it exists, but I am creating, throw an exception
+        // when it does not exist, but I am replacing, throw an exception
+        if (consumer != null) {
+            consumer.accept(employeeEntity);
+        }
+
+        EmployeeCvDoc newEmployeeCvDoc = EmployeeCvDoc.builder()
+                .withId(employeeEntity.getId())
+                .withEmployeeNames(employeeEntity.getName())
+                .withEmployeeFamilyNames(employeeEntity.getFamilyName())
+                .build();
+        employeeData.forEach(newEmployeeCvDoc.getEmployeeData()::put);
+        return employeeCvRepository.save(newEmployeeCvDoc);
+    }
 }
