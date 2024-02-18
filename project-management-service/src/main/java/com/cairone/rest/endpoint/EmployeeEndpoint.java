@@ -1,7 +1,6 @@
 package com.cairone.rest.endpoint;
 
 import com.cairone.core.resource.EmployeeResource;
-import com.cairone.data.db.domain.EmployeeEntity;
 import com.cairone.rest.ctrl.constraint.PageConstraint;
 import com.cairone.rest.request.EmployeeRequest;
 import com.cairone.rest.resource.ErrorResource;
@@ -35,9 +34,12 @@ public interface EmployeeEndpoint {
     @Operation(summary = "Employees page", description = "Get a page of employees")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved employees",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = EmployeeEntity.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Page.class)))),
             @ApiResponse(responseCode = "400", description = "Bad parameter value for sorting",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorResource.class))))
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = ErrorResource.class)))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            )
     })
     ResponseEntity<Page<EmployeeResource>> getPagedEmployees(
             @PageConstraint(fields = {"id", "curp", "name", "familyName", "bithDate", "gender"})
@@ -47,7 +49,7 @@ public interface EmployeeEndpoint {
     @Operation(summary = "Create employee", description = "Create a new employee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Employee created",
-                    content = @Content(schema = @Schema(implementation = EmployeeEntity.class)),
+                    content = @Content(schema = @Schema(implementation = EmployeeResource.class)),
                     headers = { @Header(
                             name = "Location",
                             description = "The URL to retrieve the created employee",
@@ -56,6 +58,9 @@ public interface EmployeeEndpoint {
             ),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             )
     })
     ResponseEntity<EmployeeResource> create(@Valid @RequestBody EmployeeRequest request);
@@ -64,14 +69,27 @@ public interface EmployeeEndpoint {
     @Operation(summary = "Update employee", description = "Update an employee")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Employee updated",
-                    content = @Content(schema = @Schema(implementation = EmployeeEntity.class))),
+                    content = @Content(schema = @Schema(implementation = EmployeeResource.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             )
     })
     ResponseEntity<EmployeeResource> update(UUID id, @Valid @RequestBody EmployeeRequest request);
 
     @PatchMapping("{id}")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employee fields updated",
+                    content = @Content(schema = @Schema(implementation = EmployeeResource.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(schema = @Schema(implementation = ErrorResource.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            )
+    })
     ResponseEntity<EmployeeResource> modify(UUID id, @RequestBody Map<String, Object> request);
 
     @DeleteMapping("{id}")
@@ -80,6 +98,9 @@ public interface EmployeeEndpoint {
             @ApiResponse(responseCode = "204", description = "Employee deleted"),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             )
     })
     ResponseEntity<Void> delete(UUID id);
@@ -88,11 +109,14 @@ public interface EmployeeEndpoint {
     @Operation(summary = "Employee by ID", description = "Get employee by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved employee",
-                    content = @Content(schema = @Schema(implementation = EmployeeEntity.class))),
+                    content = @Content(schema = @Schema(implementation = EmployeeResource.class))),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class))),
             @ApiResponse(responseCode = "404", description = "Employee not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class)))
+                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            )
     })
     ResponseEntity<EmployeeResource> getEmployeeById(
             @PathVariable("id") UUID id,
@@ -108,6 +132,9 @@ public interface EmployeeEndpoint {
                     }),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             )
     })
     ResponseEntity<Void> uploadAvatar(UUID id, @RequestParam("file") MultipartFile avatar);
@@ -122,6 +149,9 @@ public interface EmployeeEndpoint {
                     }),
             @ApiResponse(responseCode = "400", description = "Invalid input",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
             )
     })
     ResponseEntity<Void> replaceAvatar(UUID id, @RequestParam("file") MultipartFile avatar);
@@ -133,6 +163,12 @@ public interface EmployeeEndpoint {
                     content = @Content(schema = @Schema(implementation = Resource.class))),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            ),
+            @ApiResponse(responseCode = "403", description = "Access denied; user must be in role CONTENT_ADMIN to download avatar",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            ),
             @ApiResponse(responseCode = "404", description = "Employee avatar not found",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class)))
     })
@@ -145,6 +181,9 @@ public interface EmployeeEndpoint {
             @ApiResponse(responseCode = "204", description = "Employee avatar removed"),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            ),
             @ApiResponse(responseCode = "404", description = "Employee avatar not found",
                     content = @Content(schema = @Schema(implementation = ErrorResource.class)))
     })

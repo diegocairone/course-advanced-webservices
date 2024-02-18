@@ -52,8 +52,8 @@ public class OpenApiCfg {
                 );
     }
 
-    @Value("${spring.security.oauth2.resource-server.jwt.issuer-uri}/protocol/openid-connect/auth")
+    @Value("${app.security.idp.authorization-endpoint}")
     private String authorizationUrl;
-    @Value("${spring.security.oauth2.resource-server.jwt.issuer-uri}/protocol/openid-connect/token")
+    @Value("${app.security.idp.token-endpoint}")
     private String tokenUrl;
 }
