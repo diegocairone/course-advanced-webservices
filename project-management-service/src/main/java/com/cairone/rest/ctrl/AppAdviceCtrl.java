@@ -2,7 +2,8 @@ package com.cairone.rest.ctrl;
 
 import com.cairone.error.AppClientException;
 import com.cairone.core.exception.ResourceNotFoundException;
-import com.cairone.rest.resource.ErrorResource;
+import com.cairone.rest.resource.MultiErrorResource;
+import com.cairone.rest.resource.SingleErrorResource;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,67 +16,70 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class AppAdviceCtrl {
 
     @ExceptionHandler(AppClientException.class)
-    public ResponseEntity<ErrorResource> handleBadRequestExceptions(AppClientException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResource.builder()
+    public ResponseEntity<SingleErrorResource> handleBadRequestExceptions(AppClientException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SingleErrorResource.builder()
                 .withMessage(ex.getMessage())
                 .withReason("Invalid request")
                 .build());
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResource> handleNotFoundExceptions(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResource.builder()
-                .withMessage(ex.getMessage())
-                .withReason("Resource not found")
-                .build());
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResource> handleValidationExceptions(ConstraintViolationException ex) {
-
-        ErrorResource errorResource = ErrorResource.builder()
-                .withMessage("At least one field in the request is invalid")
-                .withReason("One or more fields are syntactically incorrect")
-                .build();
-
-        ex.getConstraintViolations().forEach(constraintViolation ->
-                errorResource.addError(
-                        constraintViolation.getMessageTemplate(),
-                        constraintViolation.getInvalidValue().toString()));
-
-        return ResponseEntity.badRequest().body(errorResource);
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResource> handleValidationExceptions(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body(ErrorResource.builder()
+    public ResponseEntity<SingleErrorResource> handleValidationExceptions(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(SingleErrorResource.builder()
                 .withMessage("Invalid arguments")
                 .withReason(ex.getMessage())
                 .build());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResource> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<SingleErrorResource> handleNotFoundExceptions(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(SingleErrorResource.builder()
+                .withMessage("Invalid arguments")
+                .withReason(String.format(
+                        "Invalid argument %s with value %s", ex.getPropertyName(), ex.getValue()))
+                .build());
+    }
 
-        ErrorResource errorResource = ErrorResource.builder()
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<MultiErrorResource> handleNotFoundExceptions(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(MultiErrorResource.builder()
+                .withMessage(ex.getMessage())
+                .withReason("Resource not found")
+                .build()
+                .addError("resource-name", ex.getResourceName())
+                .addError("resource-id", ex.getResourceId())
+        );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<MultiErrorResource> handleValidationExceptions(ConstraintViolationException ex) {
+
+        MultiErrorResource multiErrorResource = MultiErrorResource.builder()
+                .withMessage("At least one field in the request is invalid")
+                .withReason("One or more fields are syntactically incorrect")
+                .build();
+
+        ex.getConstraintViolations().forEach(constraintViolation ->
+                multiErrorResource.addError(
+                        constraintViolation.getMessageTemplate(),
+                        constraintViolation.getInvalidValue().toString()));
+
+        return ResponseEntity.badRequest().body(multiErrorResource);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<MultiErrorResource> handleValidationExceptions(MethodArgumentNotValidException ex) {
+
+        MultiErrorResource multiErrorResource = MultiErrorResource.builder()
                 .withMessage("At least one field in the request is invalid")
                 .withReason("One or more fields are syntactically incorrect")
                 .build();
 
         ex.getBindingResult().getFieldErrors().forEach(fieldError ->
-                errorResource.addError(
+                multiErrorResource.addError(
                         fieldError.getField(),
                         fieldError.getDefaultMessage()));
 
-        return ResponseEntity.badRequest().body(errorResource);
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResource> handleNotFoundExceptions(MethodArgumentTypeMismatchException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResource.builder()
-                .withMessage("Invalid arguments")
-                .withReason(String.format(
-                        "Invalid argument %s with value %s", ex.getPropertyName(), ex.getValue()))
-                .build());
+        return ResponseEntity.badRequest().body(multiErrorResource);
     }
 }

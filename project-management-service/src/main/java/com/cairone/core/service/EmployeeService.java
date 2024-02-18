@@ -1,6 +1,7 @@
 package com.cairone.core.service;
 
 import com.cairone.core.converter.EmployeeConverter;
+import com.cairone.core.exception.ResourceNotFoundException;
 import com.cairone.core.form.EmployeeForm;
 import com.cairone.core.resource.EmployeeResource;
 import com.cairone.data.db.domain.EmployeeEntity;
@@ -9,7 +10,7 @@ import com.cairone.data.docs.domain.EmployeeCvDoc;
 import com.cairone.data.docs.repository.EmployeeCvRepository;
 import com.cairone.data.storage.ContentStorage;
 import com.cairone.error.AppClientException;
-import com.cairone.core.exception.ResourceNotFoundException;
+import com.cairone.rest.request.EmployeeRequest;
 import com.cairone.utils.CurpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,12 +18,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -71,28 +71,33 @@ public class EmployeeService {
                         .withResourceId(id.toString())
                         .build());
 
-        if (request.containsKey("name")) {
-            if (request.get("name").toString().trim().isEmpty()) {
-                throw new IllegalArgumentException("Name cannot be empty");
+        Class<EmployeeRequest> clazz = EmployeeRequest.class;
+        Map<String, Field> fieldMap = Arrays.asList(clazz.getDeclaredFields())
+                .stream()
+                .collect(Collectors.toMap(Field::getName, field -> field));
+
+        request.entrySet().forEach(entry -> {
+            if (!fieldMap.containsKey(entry.getKey())) {
+                throw new IllegalArgumentException("Invalid field: " + entry.getKey());
             }
-            employeeEntity.setName(request.get("name").toString().trim().toUpperCase());
-        }
-        if (request.containsKey("familyName")) {
-            if (request.get("familyName").toString().trim().isEmpty()) {
-                throw new IllegalArgumentException("Family name cannot be empty");
+            String fieldValue = entry.getValue().toString().trim();
+            if (fieldValue.isEmpty()) {
+                throw new IllegalArgumentException("Field " + entry.getKey() + " cannot be empty");
             }
-            employeeEntity.setFamilyName(request.get("familyName").toString().trim().toUpperCase());
-        }
-        if (request.containsKey("curp")) {
-            if (request.get("curp").toString().trim().isEmpty()) {
-                throw new IllegalArgumentException("CURP cannot be empty");
-            } else if (!CurpUtil.validateCurp(request.get("curp").toString().trim())) {
-                throw new IllegalArgumentException("CURP is not valid");
+
+            if (entry.getKey().equals("name")) {
+                employeeEntity.setName(fieldValue.toUpperCase());
+            } else if (entry.getKey().equals("familyName")) {
+                employeeEntity.setFamilyName(fieldValue.toUpperCase());
+            } else if (entry.getKey().equals("curp")) {
+                if (!CurpUtil.validateCurp(fieldValue)) {
+                    throw new IllegalArgumentException("CURP is not valid");
+                }
+                employeeEntity.setCurp(fieldValue);
+                employeeEntity.setBirthDate(CurpUtil.getBirthDateFromCurp(fieldValue));
+                employeeEntity.setGender(CurpUtil.getGenderFromCurp(fieldValue));
             }
-            employeeEntity.setCurp(request.get("curp").toString().trim());
-            employeeEntity.setBirthDate(CurpUtil.getBirthDateFromCurp(request.get("curp").toString().trim()));
-            employeeEntity.setGender(CurpUtil.getGenderFromCurp(request.get("curp").toString()));
-        }
+        });
 
         EmployeeEntity saved = employeeRepository.save(employeeEntity);
         return employeeConverter.convert(saved);

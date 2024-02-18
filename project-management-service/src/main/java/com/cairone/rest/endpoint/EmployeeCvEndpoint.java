@@ -1,8 +1,9 @@
 package com.cairone.rest.endpoint;
 
-import com.cairone.rest.resource.ErrorResource;
+import com.cairone.rest.resource.MultiErrorResource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,9 +28,12 @@ public interface EmployeeCvEndpoint {
                             schema = @Schema(type = "string"))
             }, content = @Content(schema = @Schema(implementation = LinkedHashMap.class))),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            ),
             @ApiResponse(responseCode = "404", description = "Employee not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class)))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class)))
     })
     ResponseEntity<Map<String, Object>> uploadCv(
             @PathVariable("id") UUID id,
@@ -43,9 +47,12 @@ public interface EmployeeCvEndpoint {
                             schema = @Schema(type = "string"))
             }, content = @Content(schema = @Schema(implementation = LinkedHashMap.class))),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            ),
             @ApiResponse(responseCode = "404", description = "Employee not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class)))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class)))
     })
     ResponseEntity<Map<String, Object>> replaceCv(
             @PathVariable("id") UUID id,
@@ -57,9 +64,12 @@ public interface EmployeeCvEndpoint {
             @ApiResponse(responseCode = "200", description = "Employee CV downloaded"),
             @ApiResponse(responseCode = "204", description = "Employee does not have a CV"),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            ),
             @ApiResponse(responseCode = "404", description = "Employee not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class)))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class)))
     })
     ResponseEntity<Map<String, Object>> downloadCv(@PathVariable("id") UUID id);
 
@@ -68,9 +78,12 @@ public interface EmployeeCvEndpoint {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Employee CV deleted"),
             @ApiResponse(responseCode = "400", description = "Invalid ID supplied",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class))),
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Void.class)))
+            ),
             @ApiResponse(responseCode = "404", description = "Employee or CV not found",
-                    content = @Content(schema = @Schema(implementation = ErrorResource.class)))
+                    content = @Content(schema = @Schema(implementation = MultiErrorResource.class)))
     })
     ResponseEntity<Void> deleteCv(@PathVariable("id") UUID id);
 }

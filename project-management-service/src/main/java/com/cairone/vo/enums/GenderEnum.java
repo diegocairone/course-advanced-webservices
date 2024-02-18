@@ -2,9 +2,10 @@ package com.cairone.vo.enums;
 
 public enum GenderEnum {
     MALE('M'),
-    FEMALE('F');
+    FEMALE('F'),
+    NOT_BINARY('X');
 
-    char value;
+    final char value;
 
     GenderEnum(char value) {
         this.value = value;
@@ -15,6 +16,11 @@ public enum GenderEnum {
     }
 
     public static GenderEnum of(char value) {
-        return value == 'M' ? GenderEnum.MALE : GenderEnum.FEMALE;
+        return switch (value) {
+            case 'H' -> GenderEnum.MALE;
+            case 'M' -> GenderEnum.FEMALE;
+            case 'X' -> GenderEnum.NOT_BINARY;
+            default -> throw new IllegalArgumentException("Invalid character for GenderEnum");
+        };
     }
 }
