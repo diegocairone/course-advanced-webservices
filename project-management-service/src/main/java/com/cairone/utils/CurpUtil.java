@@ -11,7 +11,7 @@ public class CurpUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    public static final String CURP_REGEX = "([A-Z][AEIOUX][A-Z]{2}\\d{2}(?:0[1-9]|1[0-2])(?:0[1-9]|[12]\\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\\d])(\\d)$";
+    public static final String CURP_REGEX = "([A-Z][AEIOUX][A-Z]{2})(\\d{6})([HMX])([A-Z]{2})([^AEIOU]{3})(\\d{2})";
 
     public static final Pattern CURP_PATTERN = Pattern.compile(CURP_REGEX);
 
@@ -26,13 +26,13 @@ public class CurpUtil {
         }
 
         char genderChar = curp.charAt(10);
-        return genderChar == 'H' ? GenderEnum.MALE : GenderEnum.FEMALE;
+        return GenderEnum.of(genderChar);
     }
 
     public static LocalDate getBirthDateFromCurp(String curp) {
 
         if (!validateCurp(curp)) {
-            throw new IllegalArgumentException("Invalid CURP");
+            throw new IllegalArgumentException("Invalid birth date from CURP");
         }
 
         String currentYear = String.valueOf(LocalDate.now().getYear()).substring(2);
