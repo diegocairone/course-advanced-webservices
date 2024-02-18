@@ -4,14 +4,22 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.*;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Map;
 
 @Configuration
+@RequiredArgsConstructor
 public class OpenApiCfg {
+
+    private final AppScopes appScopes;
 
     @Bean
     public OpenAPI getOpenAPI() {
@@ -45,15 +53,25 @@ public class OpenApiCfg {
                         .authorizationCode(new OAuthFlow()
                                 .authorizationUrl(authorizationUrl)
                                 .tokenUrl(tokenUrl)
-                                .scopes(new Scopes()
-                                        .addString("profile", "profile")
-                                        .addString("email", "email"))
-                        )
-                );
+                                .scopes(appScopes.getScopes())));
     }
 
-    @Value("${app.security.idp.authorization-endpoint}")
+    @Value("${app.openapi.idp.authorization-endpoint}")
     private String authorizationUrl;
-    @Value("${app.security.idp.token-endpoint}")
+    @Value("${app.openapi.idp.token-endpoint}")
     private String tokenUrl;
+
+    @Data
+    @Component
+    @ConfigurationProperties(prefix = "app.openapi.idp")
+    public static class AppScopes {
+
+        private Map<String, String> scopesMap;
+
+        public Scopes getScopes() {
+            Scopes scopes = new Scopes();
+            this.scopesMap.forEach(scopes::addString);
+            return scopes;
+        }
+    }
 }
