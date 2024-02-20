@@ -25,8 +25,14 @@ public class EmployeeEntity {
     private LocalDate birthDate;
     @Column(name = "GENDER", length = 1, nullable = false)
     private GenderEnum gender;
+    @Column(name = "created_by", nullable = false)
     private UUID createdBy;
-    private LocalDateTime createdDate;
+    @Column(name = "created_on", nullable = false)
+    private LocalDateTime createdOn;
+    @Column(name = "updated_by", nullable = false)
+    private UUID updatedBy;
+    @Column(name = "last_updated", nullable = false)
+    private LocalDateTime lastUpdated;
 
     public UUID getId() {
         return id;
@@ -84,12 +90,28 @@ public class EmployeeEntity {
         this.createdBy = createdBy;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
+    public void setCreatedOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public UUID getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(UUID updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     @Override
