@@ -8,6 +8,7 @@ import com.cairone.core.exception.ResourceNotFoundException;
 import com.cairone.rest.endpoint.EmployeeEndpoint;
 import com.cairone.rest.request.EmployeeRequest;
 import com.cairone.utils.MediaTypeToFileExtensionUtil;
+import com.cairone.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,8 @@ public class EmployeeCtrl implements EmployeeEndpoint {
 
     @Override
     public ResponseEntity<EmployeeResource> create(EmployeeRequest request) {
-        EmployeeResource employeeResource = employeeService.save(request);
+        UUID createdBy = SecurityUtil.getUserId();
+        EmployeeResource employeeResource = employeeService.save(request, createdBy);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(employeeResource.getId())
@@ -43,7 +45,8 @@ public class EmployeeCtrl implements EmployeeEndpoint {
 
     @Override
     public ResponseEntity<EmployeeResource> update(UUID id, EmployeeRequest request) {
-        EmployeeResource employeeResource = employeeService.save(id, request);
+        UUID updatedBy = SecurityUtil.getUserId();
+        EmployeeResource employeeResource = employeeService.save(id, request, updatedBy);
         return ResponseEntity.ok(employeeResource);
     }
 

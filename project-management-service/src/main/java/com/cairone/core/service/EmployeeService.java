@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -49,17 +50,23 @@ public class EmployeeService {
         return employeeRepository.findAll(pageable).map(employeeConverter::convert);
     }
 
-    public EmployeeResource save(EmployeeForm employeeForm) {
+    public EmployeeResource save(EmployeeForm employeeForm, UUID createdBy) {
         EmployeeEntity employeeEntity = new EmployeeEntity();
+        employeeEntity.setCreatedOn(LocalDateTime.now());
+        employeeEntity.setLastUpdated(LocalDateTime.now());
+        employeeEntity.setCreatedBy(createdBy);
+        employeeEntity.setUpdatedBy(createdBy);
         return doSave(employeeEntity, employeeForm);
     }
 
-    public EmployeeResource save(UUID id, EmployeeForm employeeForm) {
+    public EmployeeResource save(UUID id, EmployeeForm employeeForm, UUID updatedBy) {
         EmployeeEntity employeeEntity = employeeRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.builder()
                         .withResourceName(RESOURCE_NAME)
                         .withResourceId(id.toString())
                         .build());
+        employeeEntity.setLastUpdated(LocalDateTime.now());
+        employeeEntity.setUpdatedBy(updatedBy);
         return doSave(employeeEntity, employeeForm);
     }
 
@@ -247,12 +254,16 @@ public class EmployeeService {
             consumer.accept(employeeEntity);
         }
 
-        EmployeeCvDoc newEmployeeCvDoc = EmployeeCvDoc.builder()
-                .withId(employeeEntity.getId())
-                .withEmployeeNames(employeeEntity.getName())
-                .withEmployeeFamilyNames(employeeEntity.getFamilyName())
-                .build();
-        employeeData.forEach(newEmployeeCvDoc.getEmployeeData()::put);
-        return employeeCvRepository.save(newEmployeeCvDoc);
+        EmployeeCvDoc employeeCvDoc = employeeCvRepository.findById(employeeEntity.getId())
+                .orElseGet(() -> EmployeeCvDoc.builder()
+                        .withId(employeeEntity.getId())
+                        .withEmployeeNames(employeeEntity.getName())
+                        .withEmployeeFamilyNames(employeeEntity.getFamilyName())
+                        .build());
+
+        employeeCvDoc.setLastUpdated(LocalDateTime.now());
+        employeeData.forEach(employeeCvDoc.getEmployeeData()::put);
+
+        return employeeCvRepository.save(employeeCvDoc);
     }
 }
