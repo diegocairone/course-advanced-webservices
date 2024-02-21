@@ -42,7 +42,7 @@ public interface EmployeeEndpoint {
             )
     })
     ResponseEntity<Page<EmployeeResource>> getPagedEmployees(
-            @PageConstraint(fields = {"id", "curp", "name", "familyName", "bithDate", "gender"})
+            @PageConstraint(fields = {"id", "curp", "name", "familyName", "birthDate", "gender"})
             Pageable pageable);
 
     @PostMapping
