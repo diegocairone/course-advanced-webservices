@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Value
@@ -17,7 +18,7 @@ public class EmployeeResource {
     private final String name;
     private final String familyName;
     private final String curp;
-    private final String birthDate;
+    private final LocalDate birthDate;
     private final GenderEnum gender;
     private final URL avatarUrl;
 

@@ -4,6 +4,7 @@ import com.cairone.core.converter.EmployeeConverter;
 import com.cairone.core.exception.ResourceNotFoundException;
 import com.cairone.core.form.EmployeeForm;
 import com.cairone.core.resource.EmployeeResource;
+import com.cairone.core.sort.SortUtils;
 import com.cairone.data.db.domain.EmployeeEntity;
 import com.cairone.data.db.repository.EmployeeRepository;
 import com.cairone.data.docs.domain.EmployeeCvDoc;
@@ -15,6 +16,8 @@ import com.cairone.utils.CurpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +50,24 @@ public class EmployeeService {
     }
 
     public Page<EmployeeResource> findAll(Pageable pageable) {
-        return employeeRepository.findAll(pageable).map(employeeConverter::convert);
+
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        Page<EmployeeEntity> employeePage = employeeRepository.findAll(pageRequest);
+
+        if (pageable.getSort().isUnsorted()) {
+            return employeePage.map(employeeConverter::convert);
+        }
+
+        SortUtils sortUtils = new SortUtils();
+        Comparator<EmployeeResource> comparator = sortUtils.getComparator(pageable.getSort(), EmployeeResource.class)
+                .orElseGet(() -> Comparator.comparing(EmployeeResource::getId));
+
+        List<EmployeeResource> sorted = employeePage.stream()
+                .map(employeeConverter::convert)
+                .sorted(comparator)
+                .toList();
+
+        return new PageImpl<>(sorted, pageable, employeePage.getTotalElements());
     }
 
     public EmployeeResource save(EmployeeForm employeeForm, UUID createdBy) {
