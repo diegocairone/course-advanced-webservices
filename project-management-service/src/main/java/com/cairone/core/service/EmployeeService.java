@@ -13,6 +13,7 @@ import com.cairone.data.storage.ContentStorage;
 import com.cairone.error.AppClientException;
 import com.cairone.rest.request.EmployeeRequest;
 import com.cairone.utils.CurpUtil;
+import com.cairone.vo.enums.GenderEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -59,6 +60,8 @@ public class EmployeeService {
         }
 
         SortUtils sortUtils = new SortUtils();
+        sortUtils.addTypeExtractor(GenderEnum.class, EmployeeResource::getGender);
+
         Comparator<EmployeeResource> comparator = sortUtils.getComparator(pageable.getSort(), EmployeeResource.class)
                 .orElseGet(() -> Comparator.comparing(EmployeeResource::getId));
 

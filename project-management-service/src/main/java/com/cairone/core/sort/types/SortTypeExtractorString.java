@@ -1,4 +1,4 @@
-package com.cairone.core.sort;
+package com.cairone.core.sort.types;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

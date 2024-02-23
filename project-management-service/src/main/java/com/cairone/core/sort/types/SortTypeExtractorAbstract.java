@@ -1,4 +1,4 @@
-package com.cairone.core.sort;
+package com.cairone.core.sort.types;
 
 import com.cairone.error.AppServerException;
 import org.springframework.data.domain.Sort;
