@@ -30,7 +30,7 @@ public class EmployeeConverter implements Converter<EmployeeEntity, EmployeeReso
                 .withName(source.getName())
                 .withFamilyName(source.getFamilyName())
                 .withCurp(source.getCurp())
-                .withBirthDate(source.getBirthDate().toString())
+                .withBirthDate(source.getBirthDate())
                 .withGender(source.getGender())
                 .withAvatarUrl(avatarUrl)
                 .build();
