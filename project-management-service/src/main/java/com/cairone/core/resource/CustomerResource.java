@@ -15,5 +15,6 @@ public class CustomerResource {
     private final String description;
     private final Address mainLocation;
     private final CityResource city;
+    private final String phone;
 
 }
