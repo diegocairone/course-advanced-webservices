@@ -1,4 +1,4 @@
-package com.cairone.data.docs.domain;
+package com.cairone.data.collection;
 
 import lombok.Builder;
 import lombok.Data;

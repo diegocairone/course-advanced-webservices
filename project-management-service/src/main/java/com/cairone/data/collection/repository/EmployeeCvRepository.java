@@ -1,6 +1,6 @@
-package com.cairone.data.docs.repository;
+package com.cairone.data.collection.repository;
 
-import com.cairone.data.docs.domain.EmployeeCvDoc;
+import com.cairone.data.collection.EmployeeCvDoc;
 
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.cairone.data.docs.repository;
+package com.cairone.data.collection.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;

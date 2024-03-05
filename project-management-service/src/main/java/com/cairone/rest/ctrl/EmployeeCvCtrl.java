@@ -1,7 +1,7 @@
 package com.cairone.rest.ctrl;
 
 import com.cairone.core.service.EmployeeService;
-import com.cairone.data.docs.domain.EmployeeCvDoc;
+import com.cairone.data.collection.EmployeeCvDoc;
 import com.cairone.rest.endpoint.EmployeeCvEndpoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
