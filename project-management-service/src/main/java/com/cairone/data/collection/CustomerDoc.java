@@ -3,6 +3,8 @@ package com.cairone.data.collection;
 import com.cairone.data.collection.embedded.AddressEmbedded;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,10 +16,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Document("customers")
-public class CustomerDoc {
+public class CustomerDoc extends AuditableDocument {
 
     @Id
+    @EqualsAndHashCode.Include
     @Field(targetType = FieldType.OBJECT_ID)
     private ObjectId id;
     @Field(targetType = FieldType.STRING)
@@ -30,25 +35,14 @@ public class CustomerDoc {
     private CityDoc city;
     @Field(targetType = FieldType.STRING)
     private String phone;
-    @Field(name = "created_by", targetType = FieldType.STRING)
-    private UUID createdBy;
-    @Field(name = "created_at", targetType = FieldType.DATE_TIME)
-    private LocalDateTime createdAt;
-    @Field(name = "updated_by", targetType = FieldType.STRING)
-    private UUID updatedBy;
-    @Field(name = "last_updated", targetType = FieldType.DATE_TIME)
-    private LocalDateTime lastUpdated;
 
     @Builder(setterPrefix = "with")
     public CustomerDoc(String name, String description, AddressEmbedded mainLocation, CityDoc city, String phone, UUID createdBy) {
+        super(createdBy, LocalDateTime.now(), createdBy, LocalDateTime.now());
         this.name = name;
         this.description = description;
         this.mainLocation = mainLocation;
         this.city = city;
         this.phone = phone;
-        this.createdBy = createdBy;
-        this.createdAt = LocalDateTime.now();
-        this.updatedBy = createdBy;
-        this.lastUpdated = LocalDateTime.now();
     }
 }
