@@ -1,6 +1,6 @@
 package com.cairone.data.collection;
 
-import com.cairone.data.collection.customer.AddressEmbedded;
+import com.cairone.data.collection.embedded.AddressEmbedded;
 import lombok.Builder;
 import lombok.Data;
 import org.bson.types.ObjectId;

@@ -1,4 +1,4 @@
-package com.cairone.data.collection.customer;
+package com.cairone.data.collection.embedded;
 
 import com.cairone.vo.enums.StreetType;
 import lombok.AllArgsConstructor;

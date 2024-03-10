@@ -1,14 +1,16 @@
 package com.cairone.core.form;
 
-import com.cairone.vo.Address;
-
-import java.util.UUID;
+import com.cairone.vo.enums.StreetType;
 
 public interface CustomerForm {
 
     public String getName();
     public String getDescription();
-    public Address getMainLocation();
+    public String getAddressNumber();
+    public String getAddressStreet();
+    public StreetType getAddressType();
+    public String getAddressApartment();
+    public String getAddressZipCode();
     public String getCityId();
     public String getPhone();
 

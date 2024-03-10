@@ -32,7 +32,7 @@ public class OpenApiCfg {
                         new SecurityRequirement().addList("http"),
                         new SecurityRequirement().addList("oauth")))
                 .info(new Info()
-                        .title("Employees Manager service")
+                        .title("Project Management service")
                 );
     }
 

@@ -1,7 +1,6 @@
 package com.cairone.rest.endpoint;
 
 import com.cairone.core.resource.CustomerResource;
-import com.cairone.core.resource.EmployeeResource;
 import com.cairone.rest.request.CustomerRequest;
 import com.cairone.rest.resource.MultiErrorResource;
 import io.swagger.v3.oas.annotations.Operation;

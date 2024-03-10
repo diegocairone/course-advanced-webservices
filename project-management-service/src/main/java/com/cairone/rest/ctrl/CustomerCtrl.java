@@ -21,7 +21,7 @@ public class CustomerCtrl implements CustomerEndpoint {
 
     @Override
     public ResponseEntity<CustomerResource> create(CustomerRequest request) {
-        UUID createdBy = UUID.randomUUID();
+        UUID createdBy = SecurityUtil.getUserId();
         CustomerResource customerResource = customerService.save(request, createdBy);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
